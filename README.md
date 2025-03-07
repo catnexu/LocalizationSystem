@@ -1,6 +1,6 @@
 # LocalizationSystem
 
-A flexible and powerful localization system for Unity projects, designed to simplify managing multilingual content.
+A flexible localization system for Unity projects, designed to simplify managing multilingual content.
 
 ## Installation
 
@@ -52,6 +52,12 @@ You can manually resolve the ILocalizationService and ITableTypeProvider impleme
 ```csharp
 builder.Register<ILocalizationService<string>, ILocalizationService, LocalizationService<string>>(Lifetime.Singleton);
 builder.Register<ITableTypeProvider<string>, DefaultTableTypeProvider>(Lifetime.Singleton);
+```
+### Initialization
+Call the ILocalizationService.InitializeAsync() method in the bootstrap state of your game after initializing Addressables. This method returns a UniTask, allowing for asynchronous initialization compatible with the [Cysharp UniTask library](https://github.com/Cysharp/UniTask).
+
+```csharp
+await localizationService.InitializeAsync();
 ```
 
 
