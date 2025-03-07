@@ -1,0 +1,22 @@
+﻿{
+  "name": "com.catnexu.localizationsystem",
+  "displayName": "String id drawer for Unity",
+  "version": "1.0.0",
+  "unity": "2019.4",
+  "description": "",
+  "keywords": [
+    "unity"
+  ],
+  "dependencies": {
+    "com.unity.addressables": "1.22.2",
+    "com.catnexu.stringiddrawer": "1.0.0"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "catnexu",
+    "email": "vitalygds@gmail.com"
+  },
+  "repository": {
+    "url": "https://github.com/catnexu/LocalizationSystem.git"
+  }
+}
