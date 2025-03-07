@@ -4,7 +4,7 @@ using UnityEngine.Localization;
 
 namespace LocalizationSystem
 {
-    internal sealed class LocalizationConfig : ScriptableObject
+    public sealed class LocalizationConfig : ScriptableObject
     {
         internal const string ConfigName = "com.catnexu.localizationsystem.config";
 
