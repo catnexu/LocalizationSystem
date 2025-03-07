@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
@@ -88,7 +89,7 @@ namespace LocalizationSystem.Editor
 
         private static bool CreateAssetGroup(LocalizationConfig config)
         {
-            var addressablesSettings = AddressableAssetSettingsDefaultObject.Settings;
+            AddressableAssetSettings addressablesSettings = AddressableAssetSettingsDefaultObject.Settings;
             if (!addressablesSettings)
             {
                 Debug.LogError($"Addressables is not specified in the project. Create {nameof(AddressableAssetSettings)}");
@@ -98,10 +99,18 @@ namespace LocalizationSystem.Editor
             AddressableAssetGroup group = addressablesSettings.FindGroup("Localization-Config");
             if (!group)
             {
-                group = AddressableAssetSettingsDefaultObject.Settings.CreateGroup("Localization-Config", false, true, false, null,
-                    typeof(BundledAssetGroupSchema), typeof(ContentUpdateGroupSchema));
+                group = addressablesSettings.CreateGroup("Localization-Config", false, true, false, null, typeof(BundledAssetGroupSchema),
+                    typeof(ContentUpdateGroupSchema));
                 BundledAssetGroupSchema schema = group.GetSchema<BundledAssetGroupSchema>();
                 schema.BundleNaming = BundledAssetGroupSchema.BundleNamingStyle.NoHash;
+            }
+            else
+            {
+                List<AddressableAssetEntry> entries = new List<AddressableAssetEntry>(group.entries);
+                for (int i = 0; i < entries.Count; i++)
+                {
+                    group.RemoveAssetEntry(entries[i]);
+                }
             }
 
             if (!AssetDatabase.TryGetGUIDAndLocalFileIdentifier(config, out string guid, out long _))
@@ -109,10 +118,9 @@ namespace LocalizationSystem.Editor
                 return false;
             }
 
-            AddressableAssetEntry entry = group.Settings.CreateOrMoveEntry(guid, group);
+            AddressableAssetEntry entry = addressablesSettings.CreateOrMoveEntry(guid, group);
             entry.SetAddress(LocalizationConfig.ConfigName);
             entry.ReadOnly = true;
-
 
             EditorUtility.SetDirty(group);
             return true;
