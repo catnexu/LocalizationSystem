@@ -31,6 +31,18 @@ namespace LocalizationSystem.Editor
         }
 
 
+        [MenuItem("Tools/Localization/Config (Runtime)")]
+        private static void OpenOrCreateConfig()
+        {
+            if (!EditorBuildSettings.TryGetConfigObject(LocalizationConfig.ConfigName, out LocalizationConfig instance))
+                instance = CreateConfig();
+            if (instance)
+            {
+                Selection.SetActiveObjectWithContext(instance, instance);
+                EditorGUIUtility.PingObject(instance);
+            }
+        }
+
         private void InitializeLocalization(SerializedObject serializedObj)
         {
             var tables = EditorExtensions.GetAllInstances<StringTableCollection>();
@@ -46,22 +58,44 @@ namespace LocalizationSystem.Editor
             serializedObject.ApplyModifiedProperties();
         }
 
-        [MenuItem("Tools/Localization/Create config")]
-        private static void CreateConfig()
+
+        private static LocalizationConfig CreateConfig()
         {
             string path = EditorUtility.SaveFilePanelInProject("Create Localization Config", "LocalizationConfig.asset", "asset", "");
             if (string.IsNullOrEmpty(path))
-                return;
+                return null;
 
             LocalizationConfig instance = CreateInstance<LocalizationConfig>();
             AssetDatabase.CreateAsset(instance, path);
-            CreateAssetGroup(instance);
-            EditorUtility.SetDirty(instance);
+            if (CreateAssetGroup(instance))
+            {
+                if (EditorUtility.IsPersistent(instance))
+                {
+                    EditorBuildSettings.AddConfigObject(LocalizationConfig.ConfigName, instance, true);
+                    Debug.Log("Localization Settings config changed to " + AssetDatabase.GetAssetPath(instance));
+                }
+
+                EditorUtility.SetDirty(instance);
+            }
+            else
+            {
+                AssetDatabase.DeleteAsset(path);
+            }
+
+            return instance;
         }
 
-        private static void CreateAssetGroup(LocalizationConfig config)
+
+        private static bool CreateAssetGroup(LocalizationConfig config)
         {
-            AddressableAssetGroup group = AddressableAssetSettingsDefaultObject.Settings.FindGroup("Localization-Config");
+            var addressablesSettings = AddressableAssetSettingsDefaultObject.Settings;
+            if (!addressablesSettings)
+            {
+                Debug.LogError($"Addressables is not specified in the project. Create {nameof(AddressableAssetSettings)}");
+                return false;
+            }
+
+            AddressableAssetGroup group = addressablesSettings.FindGroup("Localization-Config");
             if (!group)
             {
                 group = AddressableAssetSettingsDefaultObject.Settings.CreateGroup("Localization-Config", false, true, false, null,
@@ -70,14 +104,18 @@ namespace LocalizationSystem.Editor
                 schema.BundleNaming = BundledAssetGroupSchema.BundleNamingStyle.NoHash;
             }
 
-            if (AssetDatabase.TryGetGUIDAndLocalFileIdentifier(config, out var guid, out long _))
+            if (!AssetDatabase.TryGetGUIDAndLocalFileIdentifier(config, out string guid, out long _))
             {
-                AddressableAssetEntry entry = group.Settings.CreateOrMoveEntry(guid, group);
-                entry.SetAddress(LocalizationConfig.ConfigName);
-                entry.ReadOnly = true;
+                return false;
             }
 
+            AddressableAssetEntry entry = group.Settings.CreateOrMoveEntry(guid, group);
+            entry.SetAddress(LocalizationConfig.ConfigName);
+            entry.ReadOnly = true;
+
+
             EditorUtility.SetDirty(group);
+            return true;
         }
 
 

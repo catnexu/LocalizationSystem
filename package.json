@@ -9,6 +9,7 @@
   ],
   "dependencies": {
     "com.unity.addressables": "1.22.2",
+    "com.unity.localization": "1.5.4",
     "com.catnexu.stringiddrawer": "1.0.0"
   },
   "license": "MIT",

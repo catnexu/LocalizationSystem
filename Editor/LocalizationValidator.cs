@@ -35,7 +35,9 @@ namespace LocalizationSystem.Editor
         {
             if(command.context is not StringTableCollection collection)
                 return;
-            LocalizationSettings coreSettings = LocalizationSettings.instance;
+            LocalizationSettings coreSettings = LocalizationSettings.Instance;
+            if(!coreSettings)
+                return;
 
             GoogleSheetsExtension googleExtension = collection.Extensions.FirstOrDefault(e => e is GoogleSheetsExtension) as GoogleSheetsExtension;
             if (googleExtension == null)

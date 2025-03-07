@@ -6,8 +6,8 @@ namespace LocalizationSystem
 {
     internal sealed class LocalizationConfig : ScriptableObject
     {
-        internal static readonly string ConfigName = "com.catnexu.localization.config";
-        
+        internal const string ConfigName = "com.catnexu.localizationsystem.config";
+
         [SerializeField] private LocaleIdentifier[] _locales;
         [SerializeField] private string[] _tables;
 
