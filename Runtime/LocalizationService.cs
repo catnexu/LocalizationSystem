@@ -82,7 +82,7 @@ namespace LocalizationSystem
 
             await UpdateLocaleTables();
         }
-        
+
 
         public void SetLocale(SystemLanguage language)
         {
@@ -161,11 +161,13 @@ namespace LocalizationSystem
 
         private async UniTask UpdateLocaleTables()
         {
-            if (_loadCts != null)
+            CancellationTokenSource temp = _loadCts;
+            _loadCts = null;
+            if (temp != null)
             {
-                if (!_loadCts.IsCancellationRequested)
-                    _loadCts.Cancel();
-                _loadCts.Dispose();
+                if (!temp.IsCancellationRequested)
+                    temp.Cancel();
+                temp.Dispose();
             }
 
             _loadCts = new CancellationTokenSource();
