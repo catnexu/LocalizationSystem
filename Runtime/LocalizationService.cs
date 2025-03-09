@@ -18,7 +18,6 @@ namespace LocalizationSystem
 
         private readonly ITableTypeProvider<T> _typeProvider;
         private readonly Dictionary<T, StringTable> _tableMap;
-        private readonly HashSet<LocaleIdentifier> _availableLocales;
         private TableReference[] _tableReferences;
         private T[] _tableKeys;
 
@@ -34,7 +33,6 @@ namespace LocalizationSystem
         {
             _typeProvider = typeProvider;
             _tableMap = new Dictionary<T, StringTable>();
-            _availableLocales = new HashSet<LocaleIdentifier>();
             _tableReferences = Array.Empty<TableReference>();
             _tableKeys = Array.Empty<T>();
         }
@@ -43,7 +41,6 @@ namespace LocalizationSystem
         {
             _settings.OnSelectedLocaleChanged -= UpdateLocale;
         }
-
 
         public async UniTask InitializeAsync()
         {
@@ -73,39 +70,31 @@ namespace LocalizationSystem
                 _tableKeys[i] = key;
                 _tableMap[key] = null;
             }
-
-            for (int index = 0; index < config.Locales.Count; index++)
-            {
-                LocaleIdentifier localeId = config.Locales[index];
-                _availableLocales.Add(localeId);
-            }
-
+            
             await UpdateLocaleTables();
         }
 
 
         public void SetLocale(SystemLanguage language)
         {
-            if (!_isInitialized)
-                return;
-            if (!TrySetLocale(new LocaleIdentifier(language)))
-            {
-                throw new Exception($"Language {language} in not available");
-            }
+            TrySetLocale(new LocaleIdentifier(language));
         }
 
         public void SetLocale(LocaleIdentifier identifier)
         {
-            if (!_isInitialized)
-                return;
-            if (!TrySetLocale(identifier))
-            {
-                throw new Exception($"Locale {identifier} in not available");
-            }
+            TrySetLocale(identifier);
         }
 
-        private bool TrySetLocale(LocaleIdentifier id)
+        private void TrySetLocale(LocaleIdentifier id)
         {
+            if (!_isInitialized)
+            {
+#if UNITY_EDITOR
+                UnityEngine.Debug.LogError("Localization system is not initialized");
+#endif
+                return;
+            }
+
             var list = _settings.GetAvailableLocales().Locales;
             for (int i = 0; i < list.Count; i++)
             {
@@ -113,11 +102,12 @@ namespace LocalizationSystem
                 if (locale.Identifier == id)
                 {
                     _settings.SetSelectedLocale(locale);
-                    return true;
+                    return;
                 }
             }
-
-            return false;
+#if UNITY_EDITOR
+            UnityEngine.Debug.LogException(new Exception($"Locale {id} in not available"));
+#endif
         }
 
 
