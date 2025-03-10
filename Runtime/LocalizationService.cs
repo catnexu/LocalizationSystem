@@ -14,10 +14,11 @@ namespace LocalizationSystem
     public class LocalizationService<T> : ILocalizationService, ILocalizationService<T>, IDisposable
     {
         private const string Empty = "Localization not found";
-        public event Action<ILocalizationService> OnLocaleUpdate;
+        public event Action<ILocalizationService<T>> OnLocaleUpdated;
 
         private readonly ITableTypeProvider<T> _typeProvider;
         private readonly Dictionary<T, StringTable> _tableMap;
+        private readonly List<UniTask> _tasksBuffer;
         private TableReference[] _tableReferences;
         private T[] _tableKeys;
 
@@ -33,6 +34,7 @@ namespace LocalizationSystem
         {
             _typeProvider = typeProvider;
             _tableMap = new Dictionary<T, StringTable>();
+            _tasksBuffer = new List<UniTask>();
             _tableReferences = Array.Empty<TableReference>();
             _tableKeys = Array.Empty<T>();
         }
@@ -70,7 +72,7 @@ namespace LocalizationSystem
                 _tableKeys[i] = key;
                 _tableMap[key] = null;
             }
-            
+
             await UpdateLocaleTables();
         }
 
@@ -173,15 +175,18 @@ namespace LocalizationSystem
         private async UniTask UpdateLocaleAsync(CancellationToken token)
         {
             LocalizedStringDatabase database = LocalizationSettings.StringDatabase;
-            var tasks = new List<UniTask>();
+            _tasksBuffer.Clear();
             for (int i = 0; i < _tableKeys.Length; i++)
             {
-                T tableKey = _tableKeys[i];
-                tasks.Add(UpdateTableAsync(_tableMap, tableKey, database, _tableReferences[i], token));
+                if (token.IsCancellationRequested)
+                    return;
+                _tasksBuffer.Add(UpdateTableAsync(_tableMap, _tableKeys[i], database, _tableReferences[i], token));
             }
 
-            await UniTask.WhenAll(tasks);
-            OnLocaleUpdate?.Invoke(this);
+            await UniTask.WhenAll(_tasksBuffer);
+            if (!token.IsCancellationRequested)
+                _tasksBuffer.Clear();
+            OnLocaleUpdated?.Invoke(this);
         }
 
 
