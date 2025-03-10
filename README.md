@@ -1,6 +1,6 @@
 # LocalizationSystem
 
-A flexible localization system for Unity projects, designed to simplify managing multilingual content.
+A simple and flexible extension for [com.unity.localization](https://docs.unity3d.com/Packages/com.unity.localization@1.5/manual/index.html)
 
 ## Installation
 
