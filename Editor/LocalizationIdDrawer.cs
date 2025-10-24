@@ -8,8 +8,8 @@ using UnityEngine.Localization.Tables;
 
 namespace LocalizationSystem.Editor
 {
-    [CustomPropertyDrawer(typeof(LocalizationId))]
-    internal sealed class LocalizationIdDrawer : StringIdDrawer.Editor.StringIdDrawer
+    [CustomPropertyDrawer(typeof(LocalizationId), useForChildren: true)]
+    public class LocalizationIdDrawer : StringIdDrawer.Editor.StringIdDrawer
     {
         protected override List<string> GetIds(SerializedProperty property)
         {
