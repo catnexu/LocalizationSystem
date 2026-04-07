@@ -16,7 +16,7 @@ namespace LocalizationSystem.Editor
         private LocalizationSettings _currentInstance;
 
 
-        [MenuItem("Tools/Localization/Localization Settings (Editor)", priority = 1)]
+        [MenuItem(LocalizationPath.Menu + "Localization Settings (Editor)", priority = 1)]
         private static void InitWindow()
         {
             LocalizationSettingsWindow window = (LocalizationSettingsWindow) EditorWindow.GetWindow(typeof(LocalizationSettingsWindow));

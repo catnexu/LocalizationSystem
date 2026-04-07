@@ -6,11 +6,13 @@ using UnityEngine;
 
 namespace LocalizationSystem.Editor
 {
-    public static class LocalizationValidator
+    public static class LocalizationUtilities
     {
+        private const string ContextPath = "CONTEXT/" + nameof(StringTableCollection) + "/Add Configured Google Sheet Extension";
         private static StringTableCollection[] s_tables;
 
-        public static void Validate()
+        [MenuItem(LocalizationPath.Menu + "Tables/Pull all from google")]
+        public static void PullAllFromGoogle()
         {
             StringTableCollection[] tables = EditorExtensions.GetAllInstances<StringTableCollection>().ToArray();
             foreach (StringTableCollection table in tables)
@@ -30,7 +32,7 @@ namespace LocalizationSystem.Editor
         }
         
 
-        [MenuItem("CONTEXT/StringTableCollection/Add Configured Google Sheet Extension")]
+        [MenuItem(ContextPath)]
         public static void AddAndConfigureExtension(MenuCommand command)
         {
             if(command.context is not StringTableCollection collection)
