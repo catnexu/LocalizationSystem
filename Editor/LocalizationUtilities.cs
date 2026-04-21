@@ -25,7 +25,7 @@ namespace LocalizationSystem.Editor
                         table.ClearAllEntries();
                         GoogleSheets googleSheets = new(google.SheetsServiceProvider) {SpreadSheetId = google.SpreadsheetId};
                         googleSheets.PullIntoStringTableCollection(google.SheetId, table, google.Columns);
-                        Debug.Log($"The table of the {table.name} updated successfully");
+                        Debug.Log($"The table of the {table.name} updated successfully", table);
                     }
                 }
             }
