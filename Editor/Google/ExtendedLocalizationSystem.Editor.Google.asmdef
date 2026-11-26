@@ -1,0 +1,31 @@
+{
+    "name": "ExtendedLocalizationSystem.Editor.Google",
+    "rootNamespace": "",
+    "references": [
+        "Unity.Localization.Editor",
+        "Unity.Localization",
+        "ExtendedLocalizationSystem.Editor"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Unity.Localization.ThirdParty.Editor.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "ELS_GOOGLE_SHEETS",
+        "!ELS_DISABLE_GOOGLE_SHEETS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.localization",
+            "expression": "1.0.0",
+            "define": "ELS_GOOGLE_SHEETS"
+        }
+    ],
+    "noEngineReferences": false
+}
