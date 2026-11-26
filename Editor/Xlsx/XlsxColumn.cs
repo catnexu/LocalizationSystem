@@ -8,12 +8,16 @@ namespace LocalizationSystem.Editor.Xlsx
     {
         /// <summary>Entry key name. Required.</summary>
         Key,
+
         /// <summary>Entry key id. Optional, keeps ids stable when keys are renamed. Format the column as text in Excel.</summary>
         KeyId,
+
         /// <summary>Comment shared between all locales (stored in the shared entry metadata).</summary>
         KeyComment,
+
         /// <summary>Localized value for <see cref="XlsxColumn.Locale"/>.</summary>
         Locale,
+
         /// <summary>Comment for the localized value of <see cref="XlsxColumn.Locale"/>.</summary>
         LocaleComment,
     }

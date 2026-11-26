@@ -31,8 +31,13 @@ namespace LocalizationSystem.Editor.Xlsx
             Pull(collection, workbook, extension.Sheet, extension.Columns, extension.HeaderRows, extension.RemoveMissingKeys, createUndo);
         }
 
-        public static void Pull(StringTableCollection collection, XlsxWorkbook workbook, string sheet, IReadOnlyList<XlsxColumn> columns,
-            int headerRows, bool removeMissingKeys, bool createUndo = false)
+        public static void Pull(StringTableCollection collection,
+            XlsxWorkbook workbook,
+            string sheet,
+            IReadOnlyList<XlsxColumn> columns,
+            int headerRows,
+            bool removeMissingKeys,
+            bool createUndo = false)
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
@@ -139,7 +144,8 @@ namespace LocalizationSystem.Editor.Xlsx
                         if (string.IsNullOrEmpty(column.Locale.Code))
                             throw new ArgumentException($"Locale is not set for xlsx column {column.Column}", nameof(columns));
                         if (!usedLocales.Add((column.Locale.Code, column.Type)))
-                            throw new ArgumentException($"Xlsx mapping contains more than one {column.Type} column for {column.Locale.Code}", nameof(columns));
+                            throw new ArgumentException($"Xlsx mapping contains more than one {column.Type} column for {column.Locale.Code}",
+                                nameof(columns));
                         break;
                 }
             }
@@ -158,7 +164,8 @@ namespace LocalizationSystem.Editor.Xlsx
 
                 tables[i] = collection.GetTable(columns[i].Locale) as StringTable;
                 if (tables[i] == null)
-                    messages.AppendLine($"Column {columns[i].Column}: the collection has no table for the locale {columns[i].Locale.Code}, the column is ignored.");
+                    messages.AppendLine(
+                        $"Column {columns[i].Column}: the collection has no table for the locale {columns[i].Locale.Code}, the column is ignored.");
             }
 
             return tables;
@@ -251,8 +258,11 @@ namespace LocalizationSystem.Editor.Xlsx
             }
         }
 
-        private static void MergeEntries(StringTableCollection collection, HashSet<long> processed, List<SharedTableEntry> sortedEntries,
-            bool removeMissingKeys, StringBuilder messages)
+        private static void MergeEntries(StringTableCollection collection,
+            HashSet<long> processed,
+            List<SharedTableEntry> sortedEntries,
+            bool removeMissingKeys,
+            StringBuilder messages)
         {
             var removed = new List<string>();
             foreach (SharedTableEntry entry in collection.SharedData.Entries)

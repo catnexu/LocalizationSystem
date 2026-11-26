@@ -13,8 +13,10 @@ namespace LocalizationSystem.Editor.Xlsx
     {
         private static readonly string[] s_keyTitles = {"key", "keys", "key name", "ключ"};
         private static readonly string[] s_keyIdTitles = {"id", "key id", "keyid"};
+
         private static readonly string[] s_keyCommentTitles =
             {"comment", "comments", "key comment", "key comments", "shared comment", "shared comments", "description", "context", "комментарий"};
+
         private static readonly string[] s_commentSuffixes = {" comments", " comment", " (comment)", " комментарий"};
 
         /// <summary>

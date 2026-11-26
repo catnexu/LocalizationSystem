@@ -204,9 +204,10 @@ namespace LocalizationSystem.Editor.Xlsx
             switch (type)
             {
                 case "s":
-                    return int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out int index) && index >= 0 && index < _sharedStrings.Count
-                        ? _sharedStrings[index]
-                        : null;
+                    return int.TryParse(raw, NumberStyles.Integer, CultureInfo.InvariantCulture, out int index) && index >= 0 &&
+                        index < _sharedStrings.Count
+                            ? _sharedStrings[index]
+                            : null;
                 case "inlineStr":
                     return inline;
                 case "b":
@@ -331,7 +332,7 @@ namespace LocalizationSystem.Editor.Xlsx
         private XmlReader OpenXml(string path)
         {
             ZipArchiveEntry entry = _archive.GetEntry(path)
-                                    ?? _archive.Entries.FirstOrDefault(e => string.Equals(e.FullName.Replace('\\', '/'), path, StringComparison.OrdinalIgnoreCase));
+                ?? _archive.Entries.FirstOrDefault(e => string.Equals(e.FullName.Replace('\\', '/'), path, StringComparison.OrdinalIgnoreCase));
             return entry != null ? XmlReader.Create(entry.Open(), s_xmlSettings) : null;
         }
 
@@ -371,6 +372,7 @@ namespace LocalizationSystem.Editor.Xlsx
         private static string Unescape(string value) =>
             value.IndexOf("_x", StringComparison.Ordinal) < 0
                 ? value
-                : s_escapeRegex.Replace(value, m => ((char) int.Parse(m.Groups[1].Value, NumberStyles.HexNumber, CultureInfo.InvariantCulture)).ToString());
+                : s_escapeRegex.Replace(value,
+                    m => ((char) int.Parse(m.Groups[1].Value, NumberStyles.HexNumber, CultureInfo.InvariantCulture)).ToString());
     }
 }

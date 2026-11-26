@@ -33,12 +33,14 @@ namespace LocalizationSystem.Editor.Xlsx
                         {
                             string path = extension.FilePath;
                             if (!XlsxSheetCache.IsXlsx(path))
-                                throw new InvalidOperationException($"The xlsx file is not assigned for the collection {collection.TableCollectionName}");
+                                throw new InvalidOperationException(
+                                    $"The xlsx file is not assigned for the collection {collection.TableCollectionName}");
 
                             if (!workbooks.TryGetValue(path, out XlsxWorkbook workbook))
                                 workbooks[path] = workbook = XlsxWorkbook.Open(path);
 
-                            XlsxImporter.Pull(collection, workbook, extension.Sheet, extension.Columns, extension.HeaderRows, extension.RemoveMissingKeys);
+                            XlsxImporter.Pull(collection, workbook, extension.Sheet, extension.Columns, extension.HeaderRows,
+                                extension.RemoveMissingKeys);
                         }
                         catch (Exception e)
                         {
