@@ -2,7 +2,6 @@
     "name": "ExtendedLocalizationSystem",
     "rootNamespace": "",
     "references": [
-        "Unity.Localization.Editor",
         "Unity.Localization",
         "Unity.ResourceManager",
         "Unity.Addressables",

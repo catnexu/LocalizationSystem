@@ -1,6 +1,6 @@
-﻿using UnityEditor;
-using UnityEditor.Localization.Plugins.Google;
-using UnityEditor.Localization.Plugins.Google.Columns;
+﻿using System.Collections.Generic;
+using LocalizationSystem.Editor.Xlsx;
+using UnityEditor;
 using UnityEngine;
 
 namespace LocalizationSystem.Editor
@@ -8,16 +8,25 @@ namespace LocalizationSystem.Editor
     internal sealed class LocalizationSettings : ScriptableObject
     {
         private const string ConfigName = "com.catnexu.localizationsystem.settings";
-        
-        [SerializeField] private SheetsServiceProvider _sheetsProvider;
-        [SerializeReference] private SheetColumn[] _mapping;
 
+        // Google Sheets data is stored with plugin-agnostic types so this assembly does not depend on the Google module.
+        // _sheetsProvider is a SheetsServiceProvider, _mapping contains SheetColumn instances.
+        [SerializeField] private ScriptableObject _sheetsProvider;
+        [SerializeReference] private object[] _mapping;
         [SerializeField] private string _sheetId;
 
-        public SheetsServiceProvider SheetsProvider => _sheetsProvider;
-        public SheetColumn[] Mapping { get => _mapping; set => _mapping = value; }
+        [SerializeField] private DefaultAsset _xlsxFile;
+        [SerializeField, Min(0)] private int _xlsxHeaderRows = 1;
+        [SerializeField] private List<XlsxColumn> _xlsxColumns = new List<XlsxColumn>();
+
+        public ScriptableObject SheetsProvider { get => _sheetsProvider; set => _sheetsProvider = value; }
+        public object[] Mapping { get => _mapping; set => _mapping = value; }
         public string SheetId { get => _sheetId; set => _sheetId = value; }
-        
+
+        public DefaultAsset XlsxFile => _xlsxFile;
+        public int XlsxHeaderRows => _xlsxHeaderRows;
+        public IReadOnlyList<XlsxColumn> XlsxColumns => _xlsxColumns;
+
         public static LocalizationSettings Instance
         {
             get
@@ -42,7 +51,7 @@ namespace LocalizationSystem.Editor
         }
 
         private static LocalizationSettings s_instance;
-        
+
 
         private static LocalizationSettings CreateConfig()
         {

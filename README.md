@@ -60,4 +60,28 @@ Call the ILocalizationService.InitializeAsync() method in the bootstrap state of
 await localizationService.InitializeAsync();
 ```
 
+## Importing tables (Editor)
+
+Shared import settings are stored in `Tools > Localization > Localization Settings (Editor)`.
+
+### Google Sheets
+The Google Sheets integration lives in the optional `ExtendedLocalizationSystem.Editor.Google` assembly.
+It is compiled only when `com.unity.localization` is installed (`ELS_GOOGLE_SHEETS` is defined automatically).
+To exclude it, add `ELS_DISABLE_GOOGLE_SHEETS` to `Project Settings > Player > Scripting Define Symbols`.
+
+1. Set the sheets provider, spreadsheet id and the column mapping in the settings (or copy them from a configured table).
+2. Use `Add Configured Google Sheet Extension` from the `StringTableCollection` context menu.
+3. `Tools > Localization > Tables > Pull all from google` pulls all collections.
+
+### XLSX
+Any `.xlsx` file located in the project can be used as a source, no extra dependencies are required.
+
+1. Assign the file in the settings and set the columns: `Key` (required), `Key Id`, `Key Comment`, `Locale` and `Locale Comment`.
+   `Extract columns from first sheet header` creates the mapping from header titles like `Key`, `Id`, `Comment`, `en`, `English`, `English Comment`.
+2. Use `Add Configured Xlsx Extension` from the `StringTableCollection` context menu. The sheet with the collection name is selected by default.
+3. Press `Pull` in the extension or `Tools > Localization > Tables > Pull all from xlsx` to pull all collections.
+
+Keys are matched by id when the `Key Id` column is mapped, otherwise by name. Missing keys are kept unless `Remove Missing Keys` is enabled.
+Format the id column as **text**: Excel stores numbers as doubles and loses precision of long ids.
+
 

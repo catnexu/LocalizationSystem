@@ -56,7 +56,7 @@ namespace LocalizationSystem.Editor
 
             SetArrayValue(localeProp, projectLocales);
             SetArrayValue(tableProp, projectTables);
-            serializedObject.ApplyModifiedProperties();
+            serializedObj.ApplyModifiedProperties();
         }
 
 
