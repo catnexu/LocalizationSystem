@@ -49,13 +49,20 @@ namespace LocalizationSystem.Editor
             var tables = EditorExtensions.GetAllInstances<StringTableCollection>();
             var locales = EditorExtensions.GetAllInstances<Locale>();
             LocaleIdentifier[] projectLocales = locales.Select(l => l.Identifier).ToArray();
-            string[] projectTables = tables.Select(c => c.name).ToArray();
+            string[] projectTables = tables.Select(c => c.TableCollectionName).ToArray();
 
             SerializedProperty localeProp = serializedObj.FindProperty("_locales");
             SerializedProperty tableProp = serializedObj.FindProperty("_tables");
+            SerializedProperty lazyTableProp = serializedObj.FindProperty("_lazyTables");
+            string[] lazyTables = Enumerable.Range(0, lazyTableProp.arraySize)
+                .Select(i => lazyTableProp.GetArrayElementAtIndex(i).stringValue)
+                .Where(projectTables.Contains)
+                .Distinct()
+                .ToArray();
 
             SetArrayValue(localeProp, projectLocales);
             SetArrayValue(tableProp, projectTables);
+            SetArrayValue(lazyTableProp, lazyTables);
             serializedObj.ApplyModifiedProperties();
         }
 

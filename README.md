@@ -31,9 +31,15 @@ First, define a generic interface for the localization service based on the key 
 ```csharp
 public interface ILocalizationService<in T> : ILocalizationService
 {
-    string GetLocalizedString(T tableKey, string entry);
+    string GetLocalizedString(T tableKey, string entry, params object[] args);
+    bool TryGetLocalizedString(T tableKey, string entry, out string value, params object[] args);
+    UniTask LoadTableAsync(T tableKey, CancellationToken token = default);
 }
 ```
+
+`args` are [Smart String](https://docs.unity3d.com/Packages/com.unity.localization@1.5/manual/Smart/SmartStrings.html) arguments.
+The non-generic `ILocalizationService` exposes the same methods by table name, `IsInitialized`, `CurrentLocale`, `AvailableLocales`
+and the `OnLocaleUpdated` event, which is raised when the tables of the new locale (or a lazy table) are loaded.
 
 ### Implementing a Table Type Provider
 Next, implement (or use the default) table type provider to handle key resolution:
@@ -57,8 +63,18 @@ builder.Register<ITableTypeProvider<string>, DefaultTableTypeProvider>(Lifetime.
 Call the ILocalizationService.InitializeAsync() method in the bootstrap state of your game after initializing Addressables. This method returns a UniTask, allowing for asynchronous initialization compatible with the [Cysharp UniTask library](https://github.com/Cysharp/UniTask).
 
 ```csharp
-await localizationService.InitializeAsync();
+await localizationService.InitializeAsync(cancellationToken);
 ```
+
+Concurrent calls share the same initialization; if it fails or is canceled, the next call starts it again.
+
+### Locales
+`SetLocale` falls back to the parent locale (`zh-Hant-TW` → `zh-Hant` → `zh`) and then to any available locale of the same language (`en` → `en-US`).
+
+### Lazy tables
+All tables listed in the config are loaded on every locale change. Tables added to `Lazy Tables` of the config are loaded on the first request instead:
+the first `GetLocalizedString` call returns the fallback and `OnLocaleUpdated` is raised when the table is loaded.
+Use `LoadTableAsync` to wait for a lazy table before showing its strings. Once requested, a lazy table is reloaded on next locale changes.
 
 ## Importing tables (Editor)
 
