@@ -50,21 +50,30 @@ namespace LocalizationSystem.Editor
             var locales = EditorExtensions.GetAllInstances<Locale>();
             LocaleIdentifier[] projectLocales = locales.Select(l => l.Identifier).ToArray();
             string[] projectTables = tables.Select(c => c.TableCollectionName).ToArray();
+            string[] projectAssetTables = EditorExtensions.GetAllInstances<AssetTableCollection>().Select(c => c.TableCollectionName).ToArray();
 
             SerializedProperty localeProp = serializedObj.FindProperty("_locales");
             SerializedProperty tableProp = serializedObj.FindProperty("_tables");
             SerializedProperty lazyTableProp = serializedObj.FindProperty("_lazyTables");
-            string[] lazyTables = Enumerable.Range(0, lazyTableProp.arraySize)
-                .Select(i => lazyTableProp.GetArrayElementAtIndex(i).stringValue)
-                .Where(projectTables.Contains)
-                .Distinct()
-                .ToArray();
+            SerializedProperty assetTableProp = serializedObj.FindProperty("_assetTables");
+            SerializedProperty preloadAssetTableProp = serializedObj.FindProperty("_preloadAssetTables");
+            string[] lazyTables = GetExistingValues(lazyTableProp, projectTables);
+            string[] preloadAssetTables = GetExistingValues(preloadAssetTableProp, projectAssetTables);
 
             SetArrayValue(localeProp, projectLocales);
             SetArrayValue(tableProp, projectTables);
             SetArrayValue(lazyTableProp, lazyTables);
+            SetArrayValue(assetTableProp, projectAssetTables);
+            SetArrayValue(preloadAssetTableProp, preloadAssetTables);
             serializedObj.ApplyModifiedProperties();
         }
+
+        private static string[] GetExistingValues(SerializedProperty property, string[] projectValues) =>
+            Enumerable.Range(0, property.arraySize)
+                .Select(i => property.GetArrayElementAtIndex(i).stringValue)
+                .Where(projectValues.Contains)
+                .Distinct()
+                .ToArray();
 
 
         private static LocalizationConfig CreateConfig()

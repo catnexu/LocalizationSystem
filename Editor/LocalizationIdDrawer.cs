@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Localization;
 using UnityEngine;
-using UnityEngine.Localization.Tables;
 
 namespace LocalizationSystem.Editor
 {
@@ -22,24 +21,37 @@ namespace LocalizationSystem.Editor
         }
 
 
+        /// <summary>
+        /// Keys of the string table collection, or of the asset table collection if there is no string one with this name.
+        /// </summary>
         private static List<string> GetValues(string tableId)
         {
-            StringTableCollection tableCollection = EditorExtensions.GetAllInstances<StringTableCollection>()
-                .FirstOrDefault(t => t.name.Contains(tableId, StringComparison.OrdinalIgnoreCase));
+            LocalizationTableCollection tableCollection =
+                FindCollection<StringTableCollection>(tableId) ?? (LocalizationTableCollection) FindCollection<AssetTableCollection>(tableId);
             if (!tableCollection)
             {
                 Debug.LogError($"Table collection {tableId} not found");
                 return new List<string>();
             }
 
-            StringTable stringTable = tableCollection.StringTables.FirstOrDefault();
-            if (!stringTable)
+            if (!tableCollection.SharedData)
             {
-                Debug.LogError($"String table collection for table {tableId} is empty");
+                Debug.LogError($"Shared table data of the collection {tableId} is missing");
                 return new List<string>();
             }
 
-            return stringTable.Select(kvp => kvp.Value.Key).ToList();
+            return tableCollection.SharedData.Entries.Select(e => e.Key).ToList();
+        }
+
+        private static TCollection FindCollection<TCollection>(string tableId) where TCollection : LocalizationTableCollection
+        {
+            TCollection[] collections = EditorExtensions.GetAllInstances<TCollection>().Where(c => c).ToArray();
+            // The exact name is preferred, so "Voice" does not pick "VoiceOver".
+            TCollection collection =
+                collections.FirstOrDefault(c => string.Equals(c.TableCollectionName, tableId, StringComparison.OrdinalIgnoreCase));
+            return collection
+                ? collection
+                : collections.FirstOrDefault(c => c.name.Contains(tableId, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
